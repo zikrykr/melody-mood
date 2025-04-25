@@ -28,7 +28,8 @@ MelodyMood is a lightweight, Go-based backend service that delivers AI-powered, 
 
 ```mermaid
 flowchart TD
-  A[User: Input Personality, Genre, Occasion] -->|POST /recommendations| B[MelodyMood Backend (Go)]
+  A[User: Input Personality, Genre, Occasion] -->|POST /recommendations|
+  B[MelodyMood Backend (Go)]
   
   subgraph External Services
     C[OpenAI API (LLM)]
