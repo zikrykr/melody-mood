@@ -11,5 +11,5 @@ var Routes recommendationRoutes
 
 func (r recommendationRoutes) NewRoutes(router *gin.RouterGroup, recommendationHandler port.IRecommendationHandler) {
 	// (POST /api/v1/recommendations)
-	router.POST("/", recommendationHandler.GenerateRecommendations)
+	router.POST("", recommendationHandler.GenerateRecommendations)
 }

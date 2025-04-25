@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,14 @@ func (h RecommendationHandler) GenerateRecommendations(c *gin.Context) {
 	}
 
 	ctx := c.Request.Context()
+
+	sessionID := c.GetHeader("X-Session-ID")
+	if sessionID == "" {
+		pkg.ResponseError(c, http.StatusBadRequest, fmt.Errorf("Missing X-Session-ID"))
+		return
+	}
+
+	req.SessionID = sessionID
 
 	resp, err := h.recommendationService.GenerateRecommendations(ctx, req)
 	if err != nil {

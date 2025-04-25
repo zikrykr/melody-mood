@@ -32,11 +32,17 @@ type (
 		APIKey string
 	}
 
+	redis struct {
+		Host string
+		Port string
+	}
+
 	Config struct {
 		App     app
 		Http    http
 		Spotify spotify
 		OpenAI  openAI
+		Redis   redis
 	}
 )
 
@@ -71,6 +77,10 @@ func InitConfig() {
 		},
 		OpenAI: openAI{
 			APIKey: getRequiredString("OPENAI_API_KEY"),
+		},
+		Redis: redis{
+			Host: getRequiredString("REDIS_HOST"),
+			Port: getRequiredString("REDIS_PORT"),
 		},
 	}
 }

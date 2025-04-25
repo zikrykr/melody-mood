@@ -9,7 +9,7 @@ const GeneateRecommendationPrompt = `You are a musical expert, and I'm looking f
 My personality is %s, Mostly I listen to %s genre. And I usually listen to music on %s occasion.
 
 Can you arrange me 5 songs that might fit my personality and don't put any mainstream songs. 
-not wrapped in any object. Format:
+Not wrapped in any object and without json markdown tag. Format:
 [
   {
     "spotify_track_id": "...",

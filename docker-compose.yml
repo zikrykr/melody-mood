@@ -7,7 +7,15 @@ services:
       dockerfile: ./Dockerfile
     env_file: .env
     container_name: "melody-mood"
+    depends_on:
+      - redis
     command: ["./melody-mood"]
     working_dir: /app
     ports:
       - "${APP_PORT}:${APP_PORT}"
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"

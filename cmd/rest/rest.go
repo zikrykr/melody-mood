@@ -73,5 +73,9 @@ func StartServer(setupData appSetup.SetupData) {
 
 func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct) {
 	r := router.Group(BaseURL)
-	recommendationRoutes.Routes.NewRoutes(r.Group("/recommendations"), internalAppStruct.Handler.RecommendationHandler)
+
+	// recommendation
+	recommendationGroup := r.Group("/recommendations")
+	recommendationGroup.Use(middleware.RateLimitMiddleware(internalAppStruct.RedisClient))
+	recommendationRoutes.Routes.NewRoutes(recommendationGroup, internalAppStruct.Handler.RecommendationHandler)
 }

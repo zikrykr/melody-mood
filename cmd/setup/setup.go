@@ -5,6 +5,7 @@ import (
 	recommendationHandler "github.com/melody-mood/internal/recommendations/handler"
 	recommendationPort "github.com/melody-mood/internal/recommendations/port"
 	recommendationService "github.com/melody-mood/internal/recommendations/service"
+	redis "github.com/redis/go-redis/v9"
 	openai "github.com/sashabaranov/go-openai"
 )
 
@@ -16,6 +17,8 @@ type SetupData struct {
 type InternalAppStruct struct {
 	Services initServicesApp
 	Handler  InitHandlerApp
+
+	RedisClient *redis.Client
 }
 
 // Services
@@ -28,12 +31,10 @@ type InitHandlerApp struct {
 	RecommendationHandler recommendationPort.IRecommendationHandler
 }
 
-// CloseDB close connection to db
-var CloseDB func() error
-
 func InitSetup() SetupData {
 	configData := config.GetConfig()
-	internalAppVar := initInternalApp()
+	redisC := InitRedis()
+	internalAppVar := initInternalApp(redisC)
 
 	return SetupData{
 		ConfigData:  configData,
@@ -41,10 +42,11 @@ func InitSetup() SetupData {
 	}
 }
 
-func initInternalApp() InternalAppStruct {
+func initInternalApp(redis *redis.Client) InternalAppStruct {
 	var internalAppVar InternalAppStruct
 
 	openAIClient := InitOpenAIService()
+	internalAppVar.RedisClient = redis
 
 	initAppService(&internalAppVar, openAIClient)
 	initAppHandler(&internalAppVar)
@@ -53,7 +55,7 @@ func initInternalApp() InternalAppStruct {
 }
 
 func initAppService(initializeApp *InternalAppStruct, openAIClient *openai.Client) {
-	initializeApp.Services.RecommendationService = recommendationService.NewRecommendationService(openAIClient)
+	initializeApp.Services.RecommendationService = recommendationService.NewRecommendationService(openAIClient, initializeApp.RedisClient)
 }
 
 func initAppHandler(initializeApp *InternalAppStruct) {
