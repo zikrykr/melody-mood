@@ -28,7 +28,7 @@ func NewRecommendationService(openAIClient *openai.Client, rds *redis.Client) po
 func (r RecommendationService) GenerateRecommendations(ctx context.Context, req payload.GenerateRecommendationsReq) ([]payload.RecommendationResponse, error) {
 	var (
 		recommendations []payload.RecommendationResponse
-		cacheKey        = fmt.Sprintf(constants.RECOMMENDATION_CACHE_KEY, req.SessionID)
+		cacheKey        = fmt.Sprintf(constants.RECOMMENDATION_CACHE_KEY, req.SessionID, req.Personality, req.Genre, req.Occasion)
 	)
 	// Try read from cache
 	cached, err := r.rds.Get(ctx, cacheKey).Result()
