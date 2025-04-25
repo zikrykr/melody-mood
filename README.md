@@ -86,10 +86,23 @@ APP_PORT=8080
 APP_NAME=melody-mood-service
 ```
 
-3. **Run the server**
+3. **Run the server**, or
 
 ```bash
 go run main.go
+```
+
+4. **Run the server with docker**
+
+```bash
+docker-compose up --build
+```
+
+5. **Access your app**
+Once running, you can access the backend at:
+
+```bash
+http://localhost:<APP_PORT>/api/v1
 ```
 
 ## 📦 API Overview
