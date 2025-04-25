@@ -2,11 +2,13 @@ package setup
 
 import (
 	"github.com/melody-mood/config"
+	"github.com/openai/openai-go"
 )
 
 type SetupData struct {
-	ConfigData  config.Config
-	InternalApp InternalAppStruct
+	ConfigData   config.Config
+	InternalApp  InternalAppStruct
+	OpenAIClient *openai.Client
 }
 
 type InternalAppStruct struct {
@@ -30,9 +32,12 @@ func InitSetup() SetupData {
 
 	internalAppVar := initInternalApp()
 
+	openAPIClient := InitOpenAIService()
+
 	return SetupData{
-		ConfigData:  configData,
-		InternalApp: internalAppVar,
+		ConfigData:   configData,
+		InternalApp:  internalAppVar,
+		OpenAIClient: openAPIClient,
 	}
 }
 
