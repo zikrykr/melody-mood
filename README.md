@@ -28,17 +28,23 @@ MelodyMood is a lightweight, Go-based backend service that delivers AI-powered, 
 
 ```mermaid
 flowchart TD
-  A[User Input: Personality, Genre, Occasion] -->|POST /recommendations| B[MelodyMood Backend: Go]
-  B -->|Send Prompt| C[OpenAI API: LLM]
+  A[User: Input Personality, Genre, Occasion] -->|POST /recommendations| B[MelodyMood Backend (Go)]
+  
+  subgraph External Services
+    C[OpenAI API (LLM)]
+    D[Spotify API]
+  end
+  
+  B -->|Send Prompt| C
   C -->|Song Recommendations| B
-  B -->|Fetch Track Info| D[Spotify API]
+  B -->|Fetch Track Info| D
   B -->|Display Top 5 Songs| A
 
   A -->|Select 1-5 Songs| B
-  B -->|POST /playlist| C2[OpenAI API: 20 Songs]
+  B -->|POST /playlist| C2[OpenAI API (Generate 20 Songs)]
   C2 -->|Playlist Generated| B
   B -->|Create Playlist| D
-  B -->|Sync to User's Spotify Account| D
+  B -->|Sync Playlist to Spotify| D
 ```
 
 ## 🚀 Getting Started
