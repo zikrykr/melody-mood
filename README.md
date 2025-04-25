@@ -39,6 +39,7 @@ flowchart TD
   C2 -->|Playlist Generated| B
   B -->|Create Playlist| D
   B -->|Sync to User's Spotify Account| D
+```
 
 ## 🚀 Getting Started
 
