@@ -15,6 +15,8 @@ import (
 	"github.com/melody-mood/constants"
 	"github.com/melody-mood/middleware"
 	"github.com/sirupsen/logrus"
+
+	recommendationRoutes "github.com/melody-mood/internal/recommendations/routes"
 )
 
 // BaseURL base url of api
@@ -22,21 +24,16 @@ const BaseURL = "/api/v1"
 
 func StartServer(setupData appSetup.SetupData) {
 	conf := config.GetConfig()
-	// appName := conf.App.Name
+
 	if conf.App.Env == constants.PRODUCTION {
 		gin.SetMode(gin.ReleaseMode)
 	}
-
-	logrus.Info(conf.Spotify.ClientID)
 
 	// GIN Init
 	router := gin.Default()
 	router.UseRawPath = true
 
 	router.Use(middleware.CORSMiddleware())
-
-	// init public route
-	initPublicRoute(router, setupData.InternalApp)
 
 	//Init Main APP and Route
 	initRoute(router, setupData.InternalApp)
@@ -75,9 +72,6 @@ func StartServer(setupData appSetup.SetupData) {
 }
 
 func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct) {
-	// r := router.Group(BaseURL)
-}
-
-func initPublicRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct) {
-	// r := router.Group(BaseURL)
+	r := router.Group(BaseURL)
+	recommendationRoutes.Routes.NewRoutes(r.Group("/recommendations"), internalAppStruct.Handler.RecommendationHandler)
 }
