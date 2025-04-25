@@ -24,6 +24,22 @@ MelodyMood is a lightweight, Go-based backend service that delivers AI-powered, 
 - **Music Provider**: Spotify API (track info + playlist creation)
 - **Authentication**: Spotify OAuth (for playlist sync)
 
+## 📊 System Architecture
+
+````mermaid
+flowchart TD
+  A[User Input<br/>(Personality, Genre, Occasion)] -->|POST /recommendations| B[MelodyMood Backend<br/>(Go)]
+  B -->|Send Prompt| C[OpenAI API<br/>(LLM)]
+  C -->|Response with Song Recommendations| B
+  B -->|Fetch Tracks Info| D[Spotify API]
+  B -->|Show Top 5 Recommendations| A
+
+  A -->|Pick 1-5 Songs| B
+  B -->|POST /playlist| C2[OpenAI API<br/>(Generate 20 Songs)]
+  C2 -->|Return Playlist| B
+  B -->|Sync Playlist| D
+  B -->|Create Playlist in User's Spotify| D
+
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -39,7 +55,7 @@ MelodyMood is a lightweight, Go-based backend service that delivers AI-powered, 
 ```bash
 git clone https://github.com/your-username/melodymood.git
 cd melodymood
-```
+````
 
 2. **Set environment variables**
 
