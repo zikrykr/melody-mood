@@ -3,12 +3,15 @@ package service
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/melody-mood/config"
 	"github.com/melody-mood/constants"
 	"github.com/melody-mood/internal/session/payload"
 	"github.com/melody-mood/internal/session/port"
+	"github.com/melody-mood/pkg"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -38,4 +41,11 @@ func (r SessionService) GenerateSessionID(ctx context.Context) (res payload.Sess
 	res.ExpiresIn = constants.SESSION_EXPIRATION_TIME
 
 	return res, nil
+}
+
+func (r SessionService) GenerateAuthSpotifyURL(ctx context.Context, sessionID string) (string, error) {
+	conf := config.GetConfig()
+	authURL := fmt.Sprintf(pkg.SPOTIFY_AUTH_URL, conf.Spotify.ClientID, conf.Spotify.RedirectURI, url.QueryEscape(pkg.SCOPE_CREATE_PLAYLIST), sessionID)
+
+	return authURL, nil
 }

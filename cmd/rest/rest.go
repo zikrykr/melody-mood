@@ -87,10 +87,12 @@ func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct)
 
 	// recommendation
 	recommendationGroup := r.Group("/recommendations")
+	recommendationGroup.Use(middleware.SessionMiddleware(internalAppStruct.RedisClient))
 	recommendationGroup.Use(middleware.RateLimitMiddleware(internalAppStruct.RedisClient))
 	recommendationRoutes.Routes.NewRoutes(recommendationGroup, internalAppStruct.Handler.RecommendationHandler)
 
 	// playlist
 	playlistGroup := r.Group("/playlists")
+	playlistGroup.Use(middleware.SessionMiddleware(internalAppStruct.RedisClient))
 	playlistRoutes.Routes.NewRoutes(playlistGroup, internalAppStruct.Handler.PlaylistHandler)
 }

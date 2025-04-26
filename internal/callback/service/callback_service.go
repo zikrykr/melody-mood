@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/melody-mood/config"
 	"github.com/melody-mood/internal/callback/port"
 	"github.com/melody-mood/pkg"
 	"github.com/redis/go-redis/v9"
@@ -41,10 +42,11 @@ func (r CallbackService) HandleSpotifyCallback(ctx context.Context, code, errMsg
 	}
 
 	// generate user access token
+	conf := config.GetConfig()
 	accessToken, err := pkg.GenerateSpotifyAccessToken(ctx, pkg.GenerateSpotifyAccessTokenReq{
 		GrantType:   pkg.GRANT_TYPE_AUTHORIZATION_CODE,
 		Code:        code,
-		RedirectURI: "http://localhost:8080/v1/callback",
+		RedirectURI: conf.Spotify.RedirectURI,
 	})
 	if err != nil {
 		return err

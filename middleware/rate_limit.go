@@ -27,19 +27,6 @@ func RateLimitMiddleware(rds *redis.Client) gin.HandlerFunc {
 			return
 		}
 
-		// Check if the session ID is valid
-		valid, err := pkg.CheckValidSession(ctx, rds, sessionID)
-		if err != nil {
-			logrus.WithError(err).Error("error checking session validity")
-			pkg.ResponseError(c, http.StatusInternalServerError, err)
-			return
-		}
-
-		if !valid {
-			pkg.ResponseError(c, http.StatusUnauthorized, fmt.Errorf("Invalid session ID"))
-			return
-		}
-
 		allowed, count, err := allowSessionRequest(ctx, rds, sessionID)
 		if err != nil {
 			logrus.WithError(err).Error("error checking session rate limit")
