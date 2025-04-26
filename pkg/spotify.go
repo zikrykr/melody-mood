@@ -39,18 +39,41 @@ type SpotifySearchResult struct {
 	} `json:"tracks"`
 }
 
+type GenerateSpotifyAccessTokenReq struct {
+	GrantType    string `json:"grant_type"`
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+	Code         string `json:"code"`
+	RedirectURI  string `json:"redirect_uri"`
+}
+
 const (
-	GRANT_TYPE_CLIENT_CREDENTIALS  = "client_credentials"
-	SPOTIFY_ACCESS_TOKEN_CACHE_KEY = "spotify:access_token"
+	GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+	GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code"
+
+	SPOTIFY_ACCESS_TOKEN_CACHE_KEY      = "spotify:access_token"
+	SPOTIFY_ACCESS_TOKEN_USER_CACHE_KEY = "spotify:%s:access_token" // by session ID
 )
 
-func GenerateSpotifyAccessToken(ctx context.Context) (SpotifyTokenResponse, error) {
-	conf := config.GetConfig()
-
+func GenerateSpotifyAccessToken(ctx context.Context, payload GenerateSpotifyAccessTokenReq) (SpotifyTokenResponse, error) {
 	form := url.Values{}
-	form.Add("grant_type", GRANT_TYPE_CLIENT_CREDENTIALS)
-	form.Add("client_id", conf.Spotify.ClientID)
-	form.Add("client_secret", conf.Spotify.ClientSecret)
+	form.Add("grant_type", payload.GrantType)
+
+	if payload.ClientID != "" {
+		form.Add("client_id", payload.ClientID)
+	}
+
+	if payload.ClientSecret != "" {
+		form.Add("client_secret", payload.ClientSecret)
+	}
+
+	if payload.Code != "" {
+		form.Add("code", payload.Code)
+	}
+
+	if payload.RedirectURI != "" {
+		form.Add("redirect_uri", payload.RedirectURI)
+	}
 
 	var tokenResp SpotifyTokenResponse
 
@@ -89,10 +112,15 @@ func SaveSpotifyAccessToken(ctx context.Context, rds *redis.Client, token Spotif
 }
 
 func GetSpotifyAccessToken(ctx context.Context, rds *redis.Client) (string, error) {
+	conf := config.GetConfig()
 	token, err := rds.Get(ctx, SPOTIFY_ACCESS_TOKEN_CACHE_KEY).Result()
 	if err != nil {
 		if err == redis.Nil {
-			tokenResp, errToken := GenerateSpotifyAccessToken(ctx)
+			tokenResp, errToken := GenerateSpotifyAccessToken(ctx, GenerateSpotifyAccessTokenReq{
+				GrantType:    GRANT_TYPE_CLIENT_CREDENTIALS,
+				ClientID:     conf.Spotify.ClientID,
+				ClientSecret: conf.Spotify.ClientSecret,
+			})
 			if errToken != nil {
 				return "", errToken
 			}

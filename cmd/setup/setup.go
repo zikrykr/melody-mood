@@ -2,6 +2,9 @@ package setup
 
 import (
 	"github.com/melody-mood/config"
+	CallbackHandler "github.com/melody-mood/internal/callback/handler"
+	CallbackPort "github.com/melody-mood/internal/callback/port"
+	CallbackService "github.com/melody-mood/internal/callback/service"
 	playlistHandler "github.com/melody-mood/internal/playlist/handler"
 	playlistPort "github.com/melody-mood/internal/playlist/port"
 	playlistService "github.com/melody-mood/internal/playlist/service"
@@ -32,6 +35,7 @@ type initServicesApp struct {
 	RecommendationService recommendationPort.IRecommendationService
 	SessionService        sessionPort.ISessionService
 	PlaylistService       playlistPort.IPlaylistService
+	CallbackService       CallbackPort.ICallbackService
 }
 
 // Handler
@@ -39,6 +43,7 @@ type InitHandlerApp struct {
 	RecommendationHandler recommendationPort.IRecommendationHandler
 	SessionHandler        sessionPort.ISessionHandler
 	PlaylistHandler       playlistPort.IPlaylistHandler
+	CallbackHandler       CallbackPort.ICallbackHandler
 }
 
 func InitSetup() SetupData {
@@ -68,10 +73,12 @@ func initAppService(initializeApp *InternalAppStruct, openAIClient *openai.Clien
 	initializeApp.Services.RecommendationService = recommendationService.NewRecommendationService(openAIClient, initializeApp.RedisClient)
 	initializeApp.Services.SessionService = sessionService.NewSessionService(initializeApp.RedisClient)
 	initializeApp.Services.PlaylistService = playlistService.NewPlaylistService(openAIClient, initializeApp.RedisClient)
+	initializeApp.Services.CallbackService = CallbackService.NewCallbackService(initializeApp.RedisClient)
 }
 
 func initAppHandler(initializeApp *InternalAppStruct) {
 	initializeApp.Handler.RecommendationHandler = recommendationHandler.NewRecommendationHandler(initializeApp.Services.RecommendationService)
 	initializeApp.Handler.SessionHandler = sessionHandler.NewSessionHandler(initializeApp.Services.SessionService)
 	initializeApp.Handler.PlaylistHandler = playlistHandler.NewPlaylistHandler(initializeApp.Services.PlaylistService)
+	initializeApp.Handler.CallbackHandler = CallbackHandler.NewCallbackHandler(initializeApp.Services.CallbackService)
 }

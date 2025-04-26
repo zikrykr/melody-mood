@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/melody-mood/constants"
 	"github.com/melody-mood/pkg"
 	redis "github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -29,7 +28,7 @@ func RateLimitMiddleware(rds *redis.Client) gin.HandlerFunc {
 		}
 
 		// Check if the session ID is valid
-		valid, err := checkValidSession(ctx, rds, sessionID)
+		valid, err := pkg.CheckValidSession(ctx, rds, sessionID)
 		if err != nil {
 			logrus.WithError(err).Error("error checking session validity")
 			pkg.ResponseError(c, http.StatusInternalServerError, err)
@@ -87,14 +86,4 @@ func allowSessionRequest(ctx context.Context, rds *redis.Client, sessionID strin
 	}
 
 	return true, count, nil
-}
-
-func checkValidSession(ctx context.Context, rds *redis.Client, sessionID string) (bool, error) {
-	key := fmt.Sprintf(constants.SESSION_CACHE_KEY, sessionID)
-	exists, err := rds.Exists(ctx, key).Result()
-	if err != nil {
-		return false, err
-	}
-
-	return exists > 0, nil
 }

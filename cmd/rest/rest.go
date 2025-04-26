@@ -16,6 +16,7 @@ import (
 	"github.com/melody-mood/middleware"
 	"github.com/sirupsen/logrus"
 
+	callbackRoutes "github.com/melody-mood/internal/callback/routes"
 	playlistRoutes "github.com/melody-mood/internal/playlist/routes"
 	recommendationRoutes "github.com/melody-mood/internal/recommendations/routes"
 	sessionRoutes "github.com/melody-mood/internal/session/routes"
@@ -75,6 +76,10 @@ func StartServer(setupData appSetup.SetupData) {
 
 func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct) {
 	r := router.Group(BaseURL)
+
+	// callback
+	callbackGroup := r.Group("/callback")
+	callbackRoutes.Routes.NewRoutes(callbackGroup, internalAppStruct.Handler.CallbackHandler)
 
 	// session
 	sessionGroup := r.Group("/session")
