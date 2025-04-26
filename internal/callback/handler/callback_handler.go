@@ -26,8 +26,8 @@ func (h CallbackHandler) HandleSpotifyCallback(c *gin.Context) {
 
 	err := h.callbackService.HandleSpotifyCallback(ctx, code, errMsg, state)
 	if err != nil {
-		c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=error")
+		c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=error&session_id="+state)
 	}
 
-	c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=success")
+	c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=success&session_id="+state)
 }
