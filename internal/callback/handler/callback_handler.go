@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/melody-mood/internal/callback/port"
-	"github.com/melody-mood/pkg"
 )
 
 type CallbackHandler struct {
@@ -27,12 +26,8 @@ func (h CallbackHandler) HandleSpotifyCallback(c *gin.Context) {
 
 	err := h.callbackService.HandleSpotifyCallback(ctx, code, errMsg, state)
 	if err != nil {
-		pkg.ResponseError(c, http.StatusBadRequest, err)
-		return
+		c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=error")
 	}
 
-	c.JSON(http.StatusOK, pkg.HTTPResponse{
-		Success: true,
-		Message: "Spotify callback handled successfully",
-	})
+	c.Redirect(http.StatusFound, "https://melody-mood.com/oauth-spotify?status=success")
 }
