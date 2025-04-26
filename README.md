@@ -50,6 +50,10 @@ flowchart TD
 
 ---
 
+## Deployment Diagram
+
+![Deployment Diagram](deploy-diagram.png)
+
 ## 🐳 Running Locally with Docker
 
 ### 1. Clone the repository
