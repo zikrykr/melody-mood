@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "e6450044-c222-4577-8dfd-23dc628596ac",
+		"name": "Melody Mood Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19014726"
+	},
+	"item": [
+		{
+			"name": "Generate Song Recommendations",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Session-ID",
+						"value": "4f6a77e7-7918-48ff-b6ed-0439defc1663",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"personality\": \"cheerful\",\n    \"genre\": \"rock\",\n    \"occasion\": \"working\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlProd}}/recommendations",
+					"host": [
+						"{{baseUrlProd}}"
+					],
+					"path": [
+						"recommendations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Playlists",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Session-ID",
+						"value": "4f6a77e7-7918-48ff-b6ed-0439defc1663",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"picked_songs\": [\n        {\n            \"song_name\": \"Good Times Roll - 2016 Remaster\",\n            \"song_artist\": \"The Cars\"\n        },\n        {\n            \"song_name\": \"Livin' On A Prayer\",\n            \"song_artist\": \"Bon Jovi\"\n        },\n        {\n            \"song_name\": \"Don't Stop Believin\",\n            \"song_artist\": \"Journey\"\n        }\n    ],\n    \"genre\": \"rock\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlProd}}/playlists",
+					"host": [
+						"{{baseUrlProd}}"
+					],
+					"path": [
+						"playlists"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Spotify Playlist",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Session-ID",
+						"value": "4f6a77e7-7918-48ff-b6ed-0439defc1663",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"New Rock Playlist created by MelodyMood Prod\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlProd}}/playlists/spotify",
+					"host": [
+						"{{baseUrlProd}}"
+					],
+					"path": [
+						"playlists",
+						"spotify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Session ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlProd}}/session",
+					"host": [
+						"{{baseUrlProd}}"
+					],
+					"path": [
+						"session"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Auth Spotify URL",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Session-ID",
+						"value": "4f6a77e7-7918-48ff-b6ed-0439defc1663",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrlProd}}/session/auth/spotify",
+					"host": [
+						"{{baseUrlProd}}"
+					],
+					"path": [
+						"session",
+						"auth",
+						"spotify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spotify Callback Handler",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/callback?code=AQC9ZEIUEnZRE4a27REdYBqbx8L-0r6w7l7m-4FMLD5GT5Hb70J3kyGDC5-CCSgwysMlCh88_GURcGISniOq6SSpOyWm5V-Qex_7zswGAgBsJy4yuvh1pyXRQTrJjra2hZlPy5RdVV2QEkgpQaO5liG4WUOX-Qev_17vkzf8dClg6cj7TIT5gFoc27gsln3YyxswcdLhZnczhJYigbJTNk5CFq5IP-3HTl07GefYuAs1H-6MfXC7bEcFhHq8uhO96no415sQf1IhS9iouQX3iAYC-NxIo4SJeE_QLc1BCZNj-nobRK2ck7zAbI95BW9uT-gkeQqxMGxNwR_pgmjyPxsubWb77gFDcQ&state=3faabf39-4776-467b-9a02-d9ce8c9cea66",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"callback"
+					],
+					"query": [
+						{
+							"key": "code",
+							"value": "AQC9ZEIUEnZRE4a27REdYBqbx8L-0r6w7l7m-4FMLD5GT5Hb70J3kyGDC5-CCSgwysMlCh88_GURcGISniOq6SSpOyWm5V-Qex_7zswGAgBsJy4yuvh1pyXRQTrJjra2hZlPy5RdVV2QEkgpQaO5liG4WUOX-Qev_17vkzf8dClg6cj7TIT5gFoc27gsln3YyxswcdLhZnczhJYigbJTNk5CFq5IP-3HTl07GefYuAs1H-6MfXC7bEcFhHq8uhO96no415sQf1IhS9iouQX3iAYC-NxIo4SJeE_QLc1BCZNj-nobRK2ck7zAbI95BW9uT-gkeQqxMGxNwR_pgmjyPxsubWb77gFDcQ"
+						},
+						{
+							"key": "state",
+							"value": "3faabf39-4776-467b-9a02-d9ce8c9cea66"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "baseUrlProd",
+			"value": "https://melody-mood.service.jikurlabs.com/api/v1",
+			"type": "default"
+		}
+	]
+}
