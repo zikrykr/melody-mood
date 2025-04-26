@@ -229,7 +229,8 @@ func CreateSpotifyPlaylist(ctx context.Context, accessToken, userID, name string
 	var res CreateSpotifyPlaylistResp
 
 	payload := map[string]string{
-		"name": name,
+		"name":        name,
+		"description": "🎶 MelodyMood - Music that feels you.",
 	}
 
 	jsonData, err := json.Marshal(payload)
