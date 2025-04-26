@@ -85,6 +85,7 @@ func (r PlaylistService) GeneratePlaylists(ctx context.Context, req payload.Gene
 				SongAlbum:       song.Album.Name,
 				ReleaseDate:     song.Album.ReleaseDate,
 				SpotifyCoverArt: song.Album.Images[0].URL,
+				SpotifyTrackURI: song.URI,
 			})
 		}
 	}
@@ -110,4 +111,47 @@ func composePickedSongsPrompt(pickedSongs []payload.PickedSongReq) (res string) 
 		res += fmt.Sprintf("%s by %s\n", song.SongName, song.SongArtist)
 	}
 	return res
+}
+
+func (r PlaylistService) CreateUserSpotifyPlaylist(ctx context.Context, req payload.CreateUserSpotifyPlaylistReq) error {
+	accessToken, err := pkg.GetUserSpotifyAccessToken(ctx, r.rds, req.SessionID)
+	if err != nil {
+		return err
+	}
+
+	// retrieve generated playlist
+	cacheKey := fmt.Sprintf(constants.PLAYLIST_CACHE_KEY, req.SessionID)
+	cached, err := r.rds.Get(ctx, cacheKey).Result()
+	if err != nil {
+		if err == redis.Nil {
+			return fmt.Errorf("user has not generate any playlist")
+		}
+		return err
+	}
+
+	playlistTracks, err := pkg.ParseToStruct[[]payload.PlaylistTrack](cached)
+	if err != nil {
+		return err
+	}
+
+	userProfile, err := pkg.GetUserProfile(ctx, accessToken)
+	if err != nil {
+		return err
+	}
+
+	createdPlaylist, err := pkg.CreateSpotifyPlaylist(ctx, accessToken, userProfile.ID, req.Name)
+	if err != nil {
+		return err
+	}
+
+	var trackURIs []string
+	for _, track := range playlistTracks {
+		trackURIs = append(trackURIs, track.SpotifyTrackURI)
+	}
+
+	if err := pkg.AddTracksToSpotifyPlaylist(ctx, accessToken, createdPlaylist.ID, trackURIs); err != nil {
+		return err
+	}
+
+	return nil
 }

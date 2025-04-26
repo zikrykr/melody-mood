@@ -49,3 +49,32 @@ func (h PlaylistHandler) GeneratePlaylists(c *gin.Context) {
 		Data:    resp,
 	})
 }
+
+func (h PlaylistHandler) CreateUserSpotifyPlaylist(c *gin.Context) {
+	var req payload.CreateUserSpotifyPlaylistReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		pkg.ResponseError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := c.Request.Context()
+
+	sessionID := c.GetHeader("X-Session-ID")
+	if sessionID == "" {
+		pkg.ResponseError(c, http.StatusBadRequest, fmt.Errorf("Missing X-Session-ID"))
+		return
+	}
+
+	req.SessionID = sessionID
+
+	err := h.playlistService.CreateUserSpotifyPlaylist(ctx, req)
+	if err != nil {
+		pkg.ResponseError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, pkg.HTTPResponse{
+		Success: true,
+		Message: "Spotify playlist created successfully",
+	})
+}

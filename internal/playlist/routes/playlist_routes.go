@@ -12,4 +12,6 @@ var Routes playlistRoutes
 func (r playlistRoutes) NewRoutes(router *gin.RouterGroup, playlistHandler port.IPlaylistHandler) {
 	// (POST /api/v1/playlists)
 	router.POST("", playlistHandler.GeneratePlaylists)
+	// (POST /api/v1/playlists/spotify)
+	router.POST("/spotify", playlistHandler.CreateUserSpotifyPlaylist)
 }

@@ -8,6 +8,11 @@ type GeneratePlaylistReq struct {
 	SessionID string
 }
 
+type CreateUserSpotifyPlaylistReq struct {
+	Name      string `json:"name"`
+	SessionID string
+}
+
 type PickedSongReq struct {
 	SongName   string `json:"song_name"`
 	SongArtist string `json:"song_artist"`
