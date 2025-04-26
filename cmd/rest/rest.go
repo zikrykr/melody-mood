@@ -17,6 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	recommendationRoutes "github.com/melody-mood/internal/recommendations/routes"
+	sessionRoutes "github.com/melody-mood/internal/session/routes"
 )
 
 // BaseURL base url of api
@@ -73,6 +74,10 @@ func StartServer(setupData appSetup.SetupData) {
 
 func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct) {
 	r := router.Group(BaseURL)
+
+	// session
+	sessionGroup := r.Group("/session")
+	sessionRoutes.Routes.NewRoutes(sessionGroup, internalAppStruct.Handler.SessionHandler)
 
 	// recommendation
 	recommendationGroup := r.Group("/recommendations")
