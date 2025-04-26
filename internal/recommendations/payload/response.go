@@ -5,7 +5,7 @@ type RecommendationResponse struct {
 	SongName        string `json:"song_name"`
 	SongArtist      string `json:"song_artist"`
 	SongAlbum       string `json:"song_album"`
-	ReleasedYear    string `json:"released_year"`
+	ReleaseDate     string `json:"release_date"`
 	SpotifyCoverArt string `json:"spotify_cover_art"`
 	BriefReason     string `json:"brief_reason"`
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -41,23 +42,51 @@ func (r RecommendationService) GenerateRecommendations(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		recommendationResp, err := pkg.CreateOpenAIMessage(ctx, r.openAIClient, fmt.Sprintf(constants.GeneateRecommendationPrompt, req.Personality, req.Genre, req.Occasion))
+
+		return recommendations, nil
+	}
+
+	recommendationResp, err := pkg.CreateOpenAIMessage(ctx, r.openAIClient, fmt.Sprintf(constants.GeneateRecommendationPrompt, req.Personality, req.Genre, req.Occasion))
+	if err != nil {
+		return nil, err
+	}
+
+	recommendations, err = pkg.ParseToStruct[[]payload.RecommendationResponse](recommendationResp)
+	if err != nil {
+		return nil, err
+	}
+
+	// search to spotify to retrieve the song data
+	var composedResponse []payload.RecommendationResponse
+	for _, rec := range recommendations {
+		songData, err := pkg.SpotifySearch(ctx, r.rds, rec.SongName)
 		if err != nil {
 			return nil, err
 		}
 
-		// Save to Redis
-		err = r.rds.Set(ctx, cacheKey, recommendationResp, 2*time.Hour).Err()
-		if err != nil {
-			return nil, err
-		}
-
-		recommendations, err = pkg.ParseToStruct[[]payload.RecommendationResponse](recommendationResp)
-		if err != nil {
-			return nil, err
+		if len(songData.Tracks.Items) > 0 {
+			composedResponse = append(composedResponse, payload.RecommendationResponse{
+				SpotifyTrackID:  songData.Tracks.Items[0].ID,
+				SongName:        songData.Tracks.Items[0].Name,
+				SongArtist:      songData.Tracks.Items[0].Artists[0].Name,
+				SongAlbum:       songData.Tracks.Items[0].Album.Name,
+				ReleaseDate:     songData.Tracks.Items[0].Album.ReleaseDate,
+				SpotifyCoverArt: songData.Tracks.Items[0].Album.Images[0].URL,
+				BriefReason:     rec.BriefReason,
+			})
 		}
 	}
 
-	return recommendations, nil
+	jsonData, err := json.Marshal(composedResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	// Save to Redis
+	err = r.rds.Set(ctx, cacheKey, jsonData, 2*time.Hour).Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return composedResponse, nil
 }
