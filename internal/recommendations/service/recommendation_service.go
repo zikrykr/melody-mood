@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/melody-mood/constants"
@@ -29,7 +30,7 @@ func NewRecommendationService(openAIClient *openai.Client, rds *redis.Client) po
 func (r RecommendationService) GenerateRecommendations(ctx context.Context, req payload.GenerateRecommendationsReq) ([]payload.RecommendationResponse, error) {
 	var (
 		recommendations []payload.RecommendationResponse
-		cacheKey        = fmt.Sprintf(constants.RECOMMENDATION_CACHE_KEY, req.SessionID, req.Personality, req.Genre, req.Occasion)
+		cacheKey        = fmt.Sprintf(constants.RECOMMENDATION_CACHE_KEY, req.SessionID, strings.ToLower(req.Personality), strings.ToLower(req.Genre), strings.ToLower(req.Occasion))
 	)
 	// Try read from cache
 	cached, err := r.rds.Get(ctx, cacheKey).Result()
@@ -65,13 +66,14 @@ func (r RecommendationService) GenerateRecommendations(ctx context.Context, req 
 		}
 
 		if len(songData.Tracks.Items) > 0 {
+			song := songData.Tracks.Items[0]
 			composedResponse = append(composedResponse, payload.RecommendationResponse{
-				SpotifyTrackID:  songData.Tracks.Items[0].ID,
-				SongName:        songData.Tracks.Items[0].Name,
-				SongArtist:      songData.Tracks.Items[0].Artists[0].Name,
-				SongAlbum:       songData.Tracks.Items[0].Album.Name,
-				ReleaseDate:     songData.Tracks.Items[0].Album.ReleaseDate,
-				SpotifyCoverArt: songData.Tracks.Items[0].Album.Images[0].URL,
+				SpotifyTrackID:  song.ID,
+				SongName:        song.Name,
+				SongArtist:      song.Artists[0].Name,
+				SongAlbum:       song.Album.Name,
+				ReleaseDate:     song.Album.ReleaseDate,
+				SpotifyCoverArt: song.Album.Images[0].URL,
 				BriefReason:     rec.BriefReason,
 			})
 		}

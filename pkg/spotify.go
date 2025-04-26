@@ -81,7 +81,7 @@ func GenerateSpotifyAccessToken(ctx context.Context) (SpotifyTokenResponse, erro
 }
 
 func SaveSpotifyAccessToken(ctx context.Context, rds *redis.Client, token SpotifyTokenResponse) error {
-	err := rds.Set(ctx, SPOTIFY_ACCESS_TOKEN_CACHE_KEY, token.AccessToken, time.Duration(token.ExpiresIn)*time.Second).Err()
+	err := rds.Set(ctx, SPOTIFY_ACCESS_TOKEN_CACHE_KEY, token.AccessToken, time.Duration(token.ExpiresIn-600)*time.Second).Err()
 	if err != nil {
 		return fmt.Errorf("failed to save access token to Redis: %w", err)
 	}
