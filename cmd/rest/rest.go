@@ -16,6 +16,7 @@ import (
 	"github.com/melody-mood/middleware"
 	"github.com/sirupsen/logrus"
 
+	playlistRoutes "github.com/melody-mood/internal/playlist/routes"
 	recommendationRoutes "github.com/melody-mood/internal/recommendations/routes"
 	sessionRoutes "github.com/melody-mood/internal/session/routes"
 )
@@ -83,4 +84,8 @@ func initRoute(router *gin.Engine, internalAppStruct appSetup.InternalAppStruct)
 	recommendationGroup := r.Group("/recommendations")
 	recommendationGroup.Use(middleware.RateLimitMiddleware(internalAppStruct.RedisClient))
 	recommendationRoutes.Routes.NewRoutes(recommendationGroup, internalAppStruct.Handler.RecommendationHandler)
+
+	// playlist
+	playlistGroup := r.Group("/playlists")
+	playlistRoutes.Routes.NewRoutes(playlistGroup, internalAppStruct.Handler.PlaylistHandler)
 }

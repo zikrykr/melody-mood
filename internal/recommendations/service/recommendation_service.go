@@ -47,6 +47,11 @@ func (r RecommendationService) GenerateRecommendations(ctx context.Context, req 
 		return recommendations, nil
 	}
 
+	// invalidate cache
+	if err := r.rds.Del(ctx, cacheKey).Err(); err != nil {
+		return nil, err
+	}
+
 	recommendationResp, err := pkg.CreateOpenAIMessage(ctx, r.openAIClient, fmt.Sprintf(constants.GeneateRecommendationPrompt, req.Personality, req.Genre, req.Occasion))
 	if err != nil {
 		return nil, err

@@ -8,7 +8,7 @@ const GeneateRecommendationPrompt = `You are a musical expert, and I'm looking f
 My personality is %s, Mostly I listen to %s genre. And I usually listen to music on %s occasion.
 
 Can you arrange me 5 songs that might fit my personality and make sure that the song available on streaming platforms. 
-Not wrapped in any object and without json markdown tag. Format:
+Please only response in JSON RAW array, not wrapped in any object and without json markdown tag. Format:
 [
   {
     "song_name": "...",
@@ -17,7 +17,3 @@ Not wrapped in any object and without json markdown tag. Format:
   },
   ...
 ]`
-
-const (
-	SPOTIFY_SEARCH_Q = "track:%s genre:%s"
-)

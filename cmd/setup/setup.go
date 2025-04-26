@@ -2,6 +2,9 @@ package setup
 
 import (
 	"github.com/melody-mood/config"
+	playlistHandler "github.com/melody-mood/internal/playlist/handler"
+	playlistPort "github.com/melody-mood/internal/playlist/port"
+	playlistService "github.com/melody-mood/internal/playlist/service"
 	recommendationHandler "github.com/melody-mood/internal/recommendations/handler"
 	recommendationPort "github.com/melody-mood/internal/recommendations/port"
 	recommendationService "github.com/melody-mood/internal/recommendations/service"
@@ -28,12 +31,14 @@ type InternalAppStruct struct {
 type initServicesApp struct {
 	RecommendationService recommendationPort.IRecommendationService
 	SessionService        sessionPort.ISessionService
+	PlaylistService       playlistPort.IPlaylistService
 }
 
 // Handler
 type InitHandlerApp struct {
 	RecommendationHandler recommendationPort.IRecommendationHandler
 	SessionHandler        sessionPort.ISessionHandler
+	PlaylistHandler       playlistPort.IPlaylistHandler
 }
 
 func InitSetup() SetupData {
@@ -62,9 +67,11 @@ func initInternalApp(redis *redis.Client) InternalAppStruct {
 func initAppService(initializeApp *InternalAppStruct, openAIClient *openai.Client) {
 	initializeApp.Services.RecommendationService = recommendationService.NewRecommendationService(openAIClient, initializeApp.RedisClient)
 	initializeApp.Services.SessionService = sessionService.NewSessionService(initializeApp.RedisClient)
+	initializeApp.Services.PlaylistService = playlistService.NewPlaylistService(openAIClient, initializeApp.RedisClient)
 }
 
 func initAppHandler(initializeApp *InternalAppStruct) {
 	initializeApp.Handler.RecommendationHandler = recommendationHandler.NewRecommendationHandler(initializeApp.Services.RecommendationService)
 	initializeApp.Handler.SessionHandler = sessionHandler.NewSessionHandler(initializeApp.Services.SessionService)
+	initializeApp.Handler.PlaylistHandler = playlistHandler.NewPlaylistHandler(initializeApp.Services.PlaylistService)
 }
