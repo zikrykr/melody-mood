@@ -12,9 +12,9 @@ MelodyMood is a stateless, Golang-powered backend service that generates persona
   - Typical listening occasion
 - 🤖 AI-generated playlist suggestions (via OpenAI)
 - 🎵 Fetch real Spotify tracks and album cover art
-- ⚡ Caching recommendations per session (with Redis)
+- ⚡ Caching recommendations and playlists per session (with Redis)
 - 🐳 Full Dockerized setup (no manual server installation)
-- 🔥 Session-based rate-limiting (e.g., 10 requests/hour)
+- 🔥 Session-based rate-limiting (e.g., 20 requests/hour)
 - 📦 Stateless design — no database needed
 
 ---
@@ -43,12 +43,10 @@ flowchart TD
   B -->|Display Songs| A
 
   A -->|Select 1-5 Songs| B
-  B -->|POST /playlist| C
+  B -->|POST /playlists| C
   B -->|Create Playlist| D
   B -->|Track Usage Counts| R
 ```
-
-````
 
 ---
 
@@ -59,17 +57,23 @@ flowchart TD
 ```bash
 git clone https://github.com/your-username/melodymood.git
 cd melodymood
-````
+```
 
 ### 2. Create a `.env` file
 
 ```env
-OPENAI_API_KEY=your_openai_api_key
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+OPENAI_API_KEY=your_openai_api_key
 REDIRECT_URI=http://localhost:8080/callback
+
+APP_ENV=dev
 APP_PORT=8080
-REDIS_ADDR=redis:6379
+APP_NAME=melody-mood-service
+
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
 ```
 
 ### 3. Docker Compose Up
@@ -97,6 +101,7 @@ http://localhost:8080
 | :------------------------------------------ | :--------------------------------- | :------ |
 | `session:{session_id}:recommendation_count` | Count of user recommendations      | 1 hour  |
 | `session:{session_id}:recommendations`      | Cached recommendations per session | 2 hours |
+| `session:{session_id}:playlist`             | Cached playlist per session        | 2 hours |
 
 ✅ **`is_regenerate: false`** → Try to serve from Redis cache first  
 ✅ **`is_regenerate: true`** → Force re-generate from OpenAI and overwrite cache
@@ -131,6 +136,55 @@ http://localhost:8080
 **Response Headers**:
 
 - `X-RateLimit-Remaining: number` — number of allowed requests remaining this hour.
+
+---
+
+### `POST /api/v1/playlists`
+
+**Request Body**:
+
+```json
+{
+  "picked_songs": [
+    {
+      "song_name": "Blinding Lights",
+      "song_artist": "The Weeknd"
+    }
+  ],
+  "genre": "pop",
+  "is_regenerate": false
+}
+```
+
+**Headers**:
+
+- `X-Session-ID: your-unique-session-id`
+
+**Behavior**:
+
+- If `is_regenerate: false`, tries Redis cache first.
+- If no cache found, generates a new playlist.
+- If `is_regenerate: true`, always generates a new playlist and updates cache.
+
+---
+
+### `POST /api/v1/playlists/spotify`
+
+**Request Body**:
+
+```json
+{
+  "name": "My Custom Playlist"
+}
+```
+
+**Headers**:
+
+- `X-Session-ID: your-unique-session-id`
+
+**Behavior**:
+
+- Creates a Spotify playlist for the user using the generated playlist tracks.
 
 ---
 
