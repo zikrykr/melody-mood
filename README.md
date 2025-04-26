@@ -1,5 +1,7 @@
 # 🎧 MelodyMood
 
+![Banner](melody-mood-banner.png)
+
 MelodyMood is a stateless, Golang-powered backend service that generates personalized music recommendations using OpenAI and Spotify APIs. It also uses Redis for caching and tracking usage limits.
 
 ---
